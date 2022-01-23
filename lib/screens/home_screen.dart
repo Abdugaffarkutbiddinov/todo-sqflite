@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'add_note_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,7 +23,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (value) {
                 print(value);
               },
-              activeColor: Theme.of(context).primaryColor,
+              activeColor: Theme
+                  .of(context)
+                  .primaryColor,
               value: true,
             ),
           ),
@@ -38,7 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.blueGrey,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, CupertinoPageRoute(builder: (_)
+          =>
+              AddNoteScreen()
+          ));
+        },
         child: Icon(
           Icons.add,
           color: Colors.blueGrey,
