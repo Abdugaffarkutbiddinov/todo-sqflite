@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:todo_sqflite/database/database.dart';
+import 'package:todo_sqflite/models/note_model.dart';
 import 'package:todo_sqflite/screens/home_screen.dart';
 import 'package:intl/intl.dart';
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({Key? key}) : super(key: key);
+  final Note? note;
+  final Function? updateNoteList;
+
+  AddNoteScreen({this.note, this.updateNoteList});
 
   @override
   _AddNoteScreenState createState() => _AddNoteScreenState();
@@ -23,6 +28,35 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   final DateFormat _dateFormatter = DateFormat('MMM dd, yyyy');
   final List<String> _priorities = ['Low', 'Medium', 'High'];
 
+  @override
+  void initState() {
+    super.initState();
+
+    if(widget.note != null) {
+      _title = widget.note!.title!;
+      _date = widget.note!.date!;
+      _priority = widget.note!.priority!;
+
+      setState(() {
+        btnText = 'update note';
+        titleText = 'update note';
+      });
+    }
+    else {
+      setState(() {
+        btnText = 'add note';
+        titleText = 'add note';
+      });
+    }
+    _dateController.text = _dateFormatter.format(_date);
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
   _handleDatePicker() async {
     final DateTime? date = await showDatePicker(
       context: context,
@@ -38,12 +72,41 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
+  _submit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      print('$_title, $_date, $_priority');
+      Note note = Note(title: _title, date: _date, priority: _priority);
+      if (widget.note == null) {
+        note.status = 0;
+        DatabaseHelper.instance.insertNote(note);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(),
+          ),
+        );
+      } else {
+        note.id = widget.note!.id;
+        note.status = widget.note!.status;
+        DatabaseHelper.instance.updateNote(note);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(),
+          ),
+        );
+      }
+      widget.updateNoteList!();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       body: GestureDetector(
-        onTap: () {},
+        onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 80.0),
@@ -67,7 +130,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   height: 20.0,
                 ),
                 Text(
-                  'Add Note',
+                  titleText,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 40.0,
@@ -87,11 +150,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             fontSize: 18.0,
                           ),
                           decoration: InputDecoration(
-                              labelText: "Title",
-                              labelStyle: TextStyle(fontSize: 18.0),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              )),
+                            labelText: "Title",
+                            labelStyle: TextStyle(fontSize: 18.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          validator: (input) => input!.trim().isEmpty
+                              ? 'Please enter a note title'
+                              : null,
+                          onSaved: (input) => _title = input!,
+                          initialValue: _title,
                         ),
                       ),
                       SizedBox(
@@ -117,6 +186,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 20.0),
                         child: DropdownButtonFormField(
+                          isDense: true,
+                          icon: Icon(Icons.arrow_drop_down_circle),
+                          iconEnabledColor: Theme.of(context).primaryColor,
+                          iconSize: 22.0,
                           items: _priorities
                               .map(
                                 (String priority) => DropdownMenuItem(
@@ -137,6 +210,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
+                          validator: (input) => _priority == null
+                              ? "Please select a priority"
+                              : null,
                           onChanged: (value) {
                             setState(() {
                               _priority = value.toString();
@@ -151,10 +227,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(50.0),
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _submit,
                           child: Text(
                             btnText,
                             style:

@@ -25,7 +25,7 @@ class Note {
     return Note.withId(
       id: map['id'],
       title: map['title'],
-      date: map['date'],
+      date: DateTime.parse(map['date']),
       priority: map['priority'],
       status: map['status'],
     );
