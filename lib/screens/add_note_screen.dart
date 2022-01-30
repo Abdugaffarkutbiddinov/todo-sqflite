@@ -25,10 +25,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   _handleDatePicker() async {
     final DateTime? date = await showDatePicker(
-        context: context,
-        initialDate: _date,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100),);
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
     if (date != null && date != _date) {
       setState(() {
         _date = date;
@@ -132,7 +133,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           decoration: InputDecoration(
                             labelText: 'Priority',
                             labelStyle: TextStyle(fontSize: 18.0),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0),),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -140,6 +143,23 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             });
                           },
                           value: _priority,
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 20.0),
+                        height: 60.0,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Text(
+                            btnText,
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20.0),
+                          ),
                         ),
                       )
                     ],

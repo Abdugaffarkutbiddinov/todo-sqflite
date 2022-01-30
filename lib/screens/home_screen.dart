@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView.builder(
           padding: EdgeInsets.symmetric(vertical: 80.0),
           itemCount: 10,
-          itemBuilder: (BuildContext context, int index) {
+           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
