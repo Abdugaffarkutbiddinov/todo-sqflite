@@ -32,7 +32,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   void initState() {
     super.initState();
 
-    if(widget.note != null) {
+    if (widget.note != null) {
       _title = widget.note!.title!;
       _date = widget.note!.date!;
       _priority = widget.note!.priority!;
@@ -41,8 +41,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         btnText = 'update note';
         titleText = 'update note';
       });
-    }
-    else {
+    } else {
       setState(() {
         btnText = 'add note';
         titleText = 'add note';
@@ -70,6 +69,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       });
       _dateController.text = _dateFormatter.format(date);
     }
+  }
+
+  _delete() {
+    DatabaseHelper.instance.deleteNote(widget.note!.id!);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HomeScreen(),
+      ),
+    );
+    widget.updateNoteList!();
   }
 
   _submit() {
@@ -237,7 +247,22 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                 TextStyle(color: Colors.white, fontSize: 20.0),
                           ),
                         ),
-                      )
+                      ),
+                      widget.note != null
+                          ? Container(
+                              margin: EdgeInsets.symmetric(vertical: 20.0),
+                              height: 60.0,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: BorderRadius.circular(50.0),
+                              ),
+                              child: ElevatedButton(
+                                child: Text('delete note'),
+                                onPressed: _delete,
+                              ),
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ),
                 )
